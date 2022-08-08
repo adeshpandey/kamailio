@@ -15,7 +15,14 @@ services:
     volumes:
       - postgres-vol:/bitnami/postgresql
     restart: unless-stopped
-
+  rtpengine:
+    image: adeshpandey/rtpengine
+    ports:
+      - ${MIN_PORT}-${MAX_PORT}:${MIN_PORT}-${MAX_PORT}/udp
+    environment:
+      - PUBLIC_IP=${PUBLIC_IP}
+      - MIN_PORT=${MIN_PORT}
+      - MAX_PORT=${MAX_PORT}
   kamailio:
     image: adeshpandey/kamailio
     restart: unless-stopped
@@ -35,6 +42,7 @@ services:
       - 8060:8060
     depends_on:
       - db
+      - rtpengine
     command:
       [
         "-l",
