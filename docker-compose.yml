@@ -1,0 +1,61 @@
+version: '3.3'
+services:
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+  db:
+    image: bitnami/postgresql:12.5.0
+    environment:
+      POSTGRESQL_USERNAME: ${PGUSERNAME}
+      POSTGRESQL_PASSWORD: ${PGPASSWORD}
+    ports:
+      - 15432:5432
+    volumes:
+      - postgres-vol:/bitnami/postgresql
+    restart: unless-stopped
+
+  kamailio:
+    image: adeshpandey/kamailio
+    restart: unless-stopped
+    environment:
+      - PGPASSWORD=${PGPASSWORD}
+      - DBENGINE=${DBENGINE}
+      - DBHOST=${DBHOST}
+      - DBRWUSER=${DBRWUSER}
+      - DBRWPW=${DBRWPW}
+      - DBROUSER=${DBROUSER}
+      - DBROPW=${DBROPW}
+      - DBROOTUSER=${DBROOTUSER}
+      - DBROOTPW=${DBROOTPW}
+      - DBPORT=${DBPORT}
+      - DBNAME=${DBNAME}
+    ports:
+      - 8060:8060
+    depends_on:
+      - db
+    command:
+      [
+        "-l",
+        "tcp:0.0.0.0:8060/${PUBLIC_IP}:8060",
+        "-A",
+        "DBURL=\"postgres://${DBRWUSER}:${DBRWPW}@${DBHOST}/${DBNAME}\"",
+        "-A",
+        "WITH_POSTGRES",
+        "-A",
+        "WITH_RTPENGINE",
+        "-A",
+        "WITH_NAT",
+        "-A",
+        "WITH_AUTH"
+      ]
+
+volumes:
+  postgres-vol:
+
+
+networks:
+  default:
+    external: true
+    name: kam-network
