@@ -3,9 +3,11 @@
 echo "Welcome to kamailio";
 
 envsubst <  /templates/kamctlrc > /etc/kamailio/kamctlrc;
-envsubst <  /templates/pgpass > /root/.pgpass;
 
-sleep 10;
-kamdbctl create;
+if [ $CREATE_DB == "True" ]
+then
+    sleep 10;
+    kamdbctl create;
+fi
 
 kamailio -DD -E "$@"

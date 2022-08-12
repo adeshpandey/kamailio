@@ -38,6 +38,7 @@ services:
       - DBROOTPW=${DBROOTPW}
       - DBPORT=${DBPORT}
       - DBNAME=${DBNAME}
+      - CREATE_DB=${CREATE_DB}
     ports:
       - 8060:8060
     depends_on:
